@@ -1,6 +1,7 @@
-Daemon.pm
 Changes
+Daemon.pm
 MANIFEST
 Makefile.PL
 README
-test.pl
+t/00modload.t
+t/01filecreate.t

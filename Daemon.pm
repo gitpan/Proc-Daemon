@@ -1,10 +1,10 @@
 ##---------------------------------------------------------------------------##
 ##  File:
-##	@(#) Daemon.pm 1.1 98/01/27 13:08:58
+##	@(#) Daemon.pm 1.2 99/04/17 01:02:34
 ##  Author:
-##	Earl Hood	ehood@medusa.acs.uci.edu
+##	Earl Hood	earlhood@usa.net
 ##---------------------------------------------------------------------------##
-##  Copyright (C) 1997          Earl Hood, ehood@medusa.acs.uci.edu
+##  Copyright (C) 1997-1999	Earl Hood, earlhood@usa.net
 ##      All rights reserved.
 ##
 ##  This program is free software; you can redistribute it and/or
@@ -14,23 +14,27 @@
 package Proc::Daemon;
 
 use strict;
-use vars qw( $VERSION );
-$VERSION = "0.01";
+use vars qw( $VERSION @ISA @EXPORT_OK );
+use Exporter;
+@ISA = qw( Exporter );
+
+$VERSION = "0.02";
+@EXPORT_OK = qw( Fork OpenMax );
 
 ##---------------------------------------------------------------------------##
 
 use Carp;
 use POSIX;
 
-sub init {
-    my($pid, $sess_id);
-
-    ## Fork and exit parent ##
+##---------------------------------------------------------------------------##
+##	Fork(): Try to fork if at all possible.  Function will croak
+##	if unable to fork.
+##
+sub Fork {
+    my($pid);
     FORK: {
-	if ($pid = fork) { 		## parent process
-	    exit 0;
-	} elsif (defined $pid) {	## child process
-	    last FORK;
+	if (defined($pid = fork)) {
+	    return $pid;
 	} elsif ($! =~ /No more process/) {
 	    sleep 5;
 	    redo FORK;
@@ -38,16 +42,54 @@ sub init {
 	    croak "Can't fork: $!";
 	}
     }
+}
 
-    ## Detach ourselves from the terminal ##
+##---------------------------------------------------------------------------##
+##	OpenMax(): Return the maximum number of possible file descriptors.
+##	If sysconf() does not give us value, we punt with our own value.
+##
+sub OpenMax {
+    my $openmax = POSIX::sysconf( &POSIX::_SC_OPEN_MAX );
+    (!defined($openmax) || $openmax < 0) ? 64 : $openmax;
+}
+
+##---------------------------------------------------------------------------##
+##	Init(): Become a daemon.
+##
+sub Init {
+    my $oldmode = shift || 0;
+    my($pid, $sess_id, $i);
+
+    ## Fork and exit parent
+    if ($pid = Fork) { exit 0; }
+
+    ## Detach ourselves from the terminal
     croak "Cannot detach from controlling terminal"
 	unless $sess_id = POSIX::setsid();
-    
-    chdir "/";		## Change working directory
-    umask 0;		## Clear file creation mask
 
-    $sess_id;
+    ## Prevent possibility of acquiring a controling terminal
+    if (!$oldmode) {
+	$SIG{'HUP'} = 'IGNORE';
+	if ($pid = Fork) { exit 0; }
+    }
+
+    ## Change working directory
+    chdir "/";
+
+    ## Clear file creation mask
+    umask 0;
+
+    ## Close open file descriptors
+    foreach $i (0 .. OpenMax) { POSIX::close($i); }
+
+    ## Reopen stderr, stdout, stdin to /dev/null
+    open(STDIN,  "+>/dev/null");
+    open(STDOUT, "+>&STDIN");
+    open(STDERR, "+>&STDIN");
+
+    $oldmode ? $sess_id : 0;
 }
+*init = \&Init;
 
 ##---------------------------------------------------------------------------##
 
@@ -57,20 +99,22 @@ __END__
 
 =head1 NAME
 
-Proc::Daemon - Run Perl programs as daemon process
+Proc::Daemon - Run Perl program as a daemon process
 
 =head1 SYNOPSIS
 
     use Proc::Daemon;
-    $sess_id = Proc::Daemon::init;
-
-    ## ... your code here ...
+    Proc::Daemon::Init;
 
 =head1 DESCRIPTION
 
-This module contains the routine B<init> which can be called by a perl
-program to initialize itself as a daemon.  The routine achieves this
-by the following:
+This module contains the routine B<Init> which can be called by
+a perl program to initialize itself as a daemon.  A daemon is a
+process that runs in the background with no controlling terminal.
+Generally servers (like FTP and HTTP servers) run as daemon processes.
+However, do not make the mistake that a daemon == server.
+
+The B<Proc::Daemon::Init> function does the following:
 
 =over 4
 
@@ -85,28 +129,96 @@ the controlling terminal).
 
 =item 3
 
-Changes the current working directory to "/".
+Forks another child process and exits first child.  This prevents
+the potential of acquiring a controlling terminal.
 
 =item 4
 
+Changes the current working directory to "/".
+
+=item 5
+
 Clears the file creation mask.
+
+=item 6
+
+Closes all open file descriptors.
 
 =back
 
-The calling program is responible for closing unnecessary open
-file handles.
+You will notice that no logging facility, or other functionality
+is performed.  B<Proc::Daemon::Init> just performs the main steps
+to initialize a program as daemon.  Since other funtionality can vary
+depending on the nature of the program, B<Proc::Daemon> leaves
+the implementation of other desired functionality to the
+caller, or other module/library (like B<Sys::Syslog>).
 
-The return value is the session id returned from setsid().
-
-If an error occurs in init so it cannot perform the above steps, than
+There is no meaningful return value B<Proc::Daemon::Init>.  If an
+error occurs in B<Init> so it cannot perform the above steps, than
 it croaks with an error message.  One can prevent program termination
 by using eval.
 
+=head1 OTHER FUNCTIONS
+
+B<Proc::Daemon> also defines some other functions.  These functions
+can be imported into the callers name space if the function names
+are specified during the B<use> declaration:
+
+=head2 Fork
+
+B<Fork> is like the built-in B<fork>, but will try to fork if at all
+possible, retrying if necessary.  If not possible, B<Fork> will
+croak.
+
+=head2 OpenMax
+
+B<OpenMax> returns the maximum file descriptor number.
+If undetermined, 64 will be returned.
+
+=head1 NOTES
+
+=over 4
+
+=item *
+
+B<Proc::Daemon::init> is still available for backwards capatibilty.
+However, it will not perform the double fork, and will return the
+session ID.
+
+=back
+
 =head1 AUTHOR
 
-Earl Hood, ehood@medusa.acs.uci.edu
+Earl Hood, earlhood@usa.net
 
 http://www.oac.uci.edu/indiv/ehood/
+
+=head1 CREDITS
+
+Implementation of B<Proc::Daemon> derived from the following sources:
+
+=over 4
+
+=item *
+
+B<Advanced Programming in the UNIX Environment>, by W. Richard Stevens.
+Addison-Wesley, Copyright 1992.
+
+=item *
+
+B<UNIX Network Progamming>, Vol 1, by W. Richard Stevens.
+Prentice-Hall PTR, Copyright 1998.
+
+=back
+
+=head1 DEPENDENCIES
+
+B<Proc::Daemon> depends on the following modules: B<Carp>, B<POSIX>.
+
+=head1 SEE ALSO
+
+L<POSIX>,
+L<Sys::Syslog>
 
 =cut
 

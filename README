@@ -1,7 +1,7 @@
-README for Proc::Daemon v0.01
+README for Proc::Daemon v0.02
 
 ---------------------------------------------------------------------------
-    Copyright (C) 1997          Earl Hood, ehood@medusa.acs.uci.edu
+    Copyright (C) 1997-1999	Earl Hood, earlhood@usa.net
         All rights reserved.
 
     This program is free software; you can redistribute it and/or
@@ -37,6 +37,6 @@ Documentation is in POD format and should automatically get installed
 with the module(s).
 
 ---------------------------------------------------------------------------
-Earl Hood, ehood@medusa.acs.uci.edu
+Earl Hood, earlhood@usa.net
 http://www.oac.uci.edu/indiv/ehood/
-98/01/27 13:00:51
+99/04/17 01:04:19

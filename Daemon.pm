@@ -1,14 +1,22 @@
 ##---------------------------------------------------------------------------##
 ##  File:
-##	@(#) Daemon.pm 1.2 99/04/17 01:02:34
+##	@(#) Daemon.pm 1.3 03/06/19 17:50:34
 ##  Author:
-##	Earl Hood	earlhood@usa.net
+##	Earl Hood	earl@earlhood.com
+##  Description:
+##	POD at end-of-file.
 ##---------------------------------------------------------------------------##
-##  Copyright (C) 1997-1999	Earl Hood, earlhood@usa.net
+##  Copyright (C) 1997-1999	Earl Hood, earl@earlhood.com
 ##      All rights reserved.
 ##
-##  This program is free software; you can redistribute it and/or
-##  modify it under the same terms as Perl itself.
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of either:
+##
+##  a) the GNU General Public License as published by the Free Software
+##     Foundation; either version 1, or (at your option) any later
+##     version, or
+##
+##  b) the "Artistic License" which comes with Perl.
 ##---------------------------------------------------------------------------##
 
 package Proc::Daemon;
@@ -18,7 +26,7 @@ use vars qw( $VERSION @ISA @EXPORT_OK );
 use Exporter;
 @ISA = qw( Exporter );
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 @EXPORT_OK = qw( Fork OpenMax );
 
 ##---------------------------------------------------------------------------##
@@ -109,10 +117,10 @@ Proc::Daemon - Run Perl program as a daemon process
 =head1 DESCRIPTION
 
 This module contains the routine B<Init> which can be called by
-a perl program to initialize itself as a daemon.  A daemon is a
+a Perl program to initialize itself as a daemon.  A daemon is a
 process that runs in the background with no controlling terminal.
 Generally servers (like FTP and HTTP servers) run as daemon processes.
-However, do not make the mistake that a daemon == server.
+Note, do not make the mistake that a daemon == server.
 
 The B<Proc::Daemon::Init> function does the following:
 
@@ -189,9 +197,9 @@ session ID.
 
 =head1 AUTHOR
 
-Earl Hood, earlhood@usa.net
+Earl Hood, earl@earlhood.com
 
-http://www.oac.uci.edu/indiv/ehood/
+http://www.earlhood.com/
 
 =head1 CREDITS
 
@@ -213,7 +221,7 @@ Prentice-Hall PTR, Copyright 1998.
 
 =head1 DEPENDENCIES
 
-B<Proc::Daemon> depends on the following modules: B<Carp>, B<POSIX>.
+B<Carp>, B<POSIX>.
 
 =head1 SEE ALSO
 

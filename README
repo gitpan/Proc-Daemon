@@ -1,11 +1,17 @@
-README for Proc::Daemon v0.02
+README for Proc::Daemon v0.03
 
 ---------------------------------------------------------------------------
-    Copyright (C) 1997-1999	Earl Hood, earlhood@usa.net
+    Copyright (C) 1997-1999	Earl Hood, earl@earlhood.com
         All rights reserved.
 
-    This program is free software; you can redistribute it and/or
-    modify it under the same terms as Perl itself.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of either:
+  
+    a) the GNU General Public License as published by the Free Software
+       Foundation; either version 1, or (at your option) any later
+       version, or
+  
+    b) the "Artistic License" which comes with Perl.
 
 ---------------------------------------------------------------------------
 SUMMARY
@@ -37,6 +43,6 @@ Documentation is in POD format and should automatically get installed
 with the module(s).
 
 ---------------------------------------------------------------------------
-Earl Hood, earlhood@usa.net
-http://www.oac.uci.edu/indiv/ehood/
-99/04/17 01:04:19
+Earl Hood, earl@earlhood.com
+<http://www.earlhood.com/>
+03/06/19 17:50:50

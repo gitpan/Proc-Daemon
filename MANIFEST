@@ -1,7 +1,9 @@
 Changes
-Daemon.pm
 MANIFEST
 Makefile.PL
 README
-t/00modload.t
-t/01filecreate.t
+lib/Proc/Daemon.pm
+lib/Proc/Daemon.pod
+t/01_loadmodule.t
+t/02_testmodule.t
+META.yml                                 Module meta-data (added by MakeMaker)

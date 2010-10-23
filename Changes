@@ -1,4 +1,14 @@
-Revision history for Perl extension Proc::Daemon.
+Revision history for Perl module Proc::Daemon.
+
+0.04  Sun Okt 24 2010
+	- Added functions: new(), adjust_settings(), fix_filename(), Status(),
+	  Kill_Daemon(), get_pid() and get_pid_by_proc_table_attr().
+	- Init() now returns the PID of the daemon.
+	- Fork() now allways returns values like Perls built-in 'fork' does.
+	- Description was rewritten, extended and moved to the new Daemon.pod file.
+	- Additional test are done at installation.
+	- $SIG{'HUP'} was set to be valid only 'local' (bug report).
+	- POSIX::EAGAIN() was added to Fork() (bug report).
 
 0.03  Thu Jun 19 2003
 	- Licensing is more explicit: Either GPL or Artistic.

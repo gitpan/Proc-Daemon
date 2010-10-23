@@ -1,17 +1,4 @@
-README for Proc::Daemon v0.03
-
----------------------------------------------------------------------------
-    Copyright (C) 1997-1999	Earl Hood, earl@earlhood.com
-        All rights reserved.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of either:
-  
-    a) the GNU General Public License as published by the Free Software
-       Foundation; either version 1, or (at your option) any later
-       version, or
-  
-    b) the "Artistic License" which comes with Perl.
+README for Proc::Daemon
 
 ---------------------------------------------------------------------------
 SUMMARY
@@ -22,7 +9,10 @@ as a Unix daemon process.
 ---------------------------------------------------------------------------
 INSTALLATION
 
-You should be able to install the module(s) with the following:
+This module can be installed on Perl 5.8.
+It was not tested on older versions but it might work.
+
+You should be able to install the module with the following:
 
     perl Makefile.PL
     make
@@ -32,17 +22,34 @@ You should be able to install the module(s) with the following:
 If you want to install in a specific directory, try:
 
     perl Makefile.PL PREFIX=/tmp/myperl5
-    make
-    make test
-    make install
+    ...
+
+If you'd like to see the raw output of the tests, try:
+
+    ...
+    make test TEST_VERBOSE=1
+    ...
 
 ---------------------------------------------------------------------------
 DOCUMENTATION
 
-Documentation is in POD format and should automatically get installed
-with the module(s).
+Documentation is in the Daemon.pod file and should automatically get installed
+with the module.
 
 ---------------------------------------------------------------------------
-Earl Hood, earl@earlhood.com
-<http://www.earlhood.com/>
-03/06/19 17:50:50
+COPYRIGHT (C) 1997-2010
+
+Earl Hood
+earl@earlhood.com
+http://www.earlhood.com/
+
+and
+
+Detlef Pilzecker
+deti@cpan.org
+http://www.secure-sip-server.net/
+
+All rights reserved.
+
+This module is free software. It may be used, redistributed and/or modified
+under the same terms as Perl itself.

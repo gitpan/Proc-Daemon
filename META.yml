@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Proc-Daemon
-version:            0.04
+version:            0.05
 abstract:           ~
 author:
     - Earl Hood earl@earlhood.com, Detlef Pilzecker deti@cpan.org

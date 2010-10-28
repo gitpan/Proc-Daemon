@@ -1,5 +1,13 @@
 Revision history for Perl module Proc::Daemon.
 
+0.05  Thu Okt 28 2010
+	- fixed a problem when using the old method of calling Proc::Daemon::Init
+      without object (reported by Alex Samorukov). The parent process didn't
+      exit.
+	- fixed a problem with Proc::ProcessTable 0.44: Under some conditions
+      'cmndline' retruns with space and/or other characters at the end.
+	- Update and small fixes in the documentation.
+
 0.04  Sun Okt 24 2010
 	- Added functions: new(), adjust_settings(), fix_filename(), Status(),
 	  Kill_Daemon(), get_pid() and get_pid_by_proc_table_attr().
@@ -22,4 +30,4 @@ Revision history for Perl module Proc::Daemon.
 	- Added Fork() and OpenMax() functions.
 
 0.01  Thu Jan 27 1998
-	- initial bundled release
+	- initial bundled release.

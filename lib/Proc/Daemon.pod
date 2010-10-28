@@ -99,7 +99,6 @@ The first child transfers the PID of the second child (daemon) to the
 parent and exits. Additionally the PID of the daemon process can be written
 into a file if 'pid_file' is defined.
 
-
 =back
 
 
@@ -182,7 +181,7 @@ all STDERR will go to C</working/daemon/directory/debug.txt>
 
 =item *
 
-the program C<perl /home/my_script.pl> will be executed and run as
+the script C</home/my_script.pl> will be executed by C<perl> and run as
 daemon. Therefore the child process will never return to this parent script.
 
 =back
@@ -196,36 +195,36 @@ daemon. Therefore the child process will never return to this parent script.
 
 =over 4
 
-=item Init
-
-=item Init( { [ %ARGS ] } )
-
 =item Init( [ { %ARGS } ] )
 
 Become a daemon.
 
-If used for the first time after C<new>, you call C<Init> with the object to
-start the daemon.
+If used for the first time after C<new>, you call C<Init> with the object
+reference to start the daemon.
 
-    $daemon->Init;
+    $pid = $daemon->Init();
 
-If you want to use the object created by C<new> for other daemons, you can
-call C<Init( { [ %ARGS ] } )> with the object. Notice that it
-shouldn't be called without arguments! At least it must be an empty anonymous
-hash, or this next daemon will do and write all in the same files as the first
-daemon.
+If you want to use the object reference created by C<new> for other daemons,
+you write C<Init( { %ARGS } )>. The argument must be a hashref. %ARGS are
+the same as described in C<new>. Notice that you shouldn't call C<Init()>, or
+this next daemon will do and write all in the same files as the first daemon. At
+least use an empty anonymous hash.
 
-    $daemon->Init( { } );
-    $daemon->Init( {
+    $pid = $daemon->Init( {} );
+    @pid = $daemon->Init( {
         work_dir     => '/other/daemon/directory',
-        exec_command => 'perl /home/my_next_script.pl',
+        exec_command => [ 'perl /home/my_second_script.pl', 'perl /home/my_third_script.pl' ],
     } );
 
-If called without object reference and for backward compatibility you can use
-the third depreciated method.
+If you don't need the Proc::Daemon object reference in your script, you
+can also use the method without object reference:
+
+    $pid = Proc::Daemon::Init( [ { %ARGS } ] );
+
+If you call the C<Init> method in the context without looking for a return value
+(void context) the parent process will C<exit> here like in earlier versions:
 
     Proc::Daemon::Init;
-    Proc::Daemon::Init( \%ARGS );
 
 
 =item Status( [ $ARG ] )
@@ -240,7 +239,7 @@ $ARG can be a string with:
 =item *
 
 C<undef>, in this case it tries to get the PID to check out of the object
-settings.
+reference settings.
 
 =item *
 
@@ -262,7 +261,7 @@ L<Proc::ProcessTable> to be installed.
 
 This function kills the Daemon process. Returns the number of processes
 successfully killed (which mostly is not the same as the PID number), or
-C<0> if the process wasn't found. 
+0 if the process wasn't found. 
 
 $ARG is the same as of C<Status()>.
 
@@ -273,7 +272,6 @@ Is like the Perl built-in C<fork>, but it retries to fork over 30 seconds if
 necessary and if possible to fork at all. It returns the child PID to the
 parent process and 0 to the child process. If the fork is unsuccessful
 it C<warn>s and returns C<undef>.
-
 
 =back
 
@@ -334,18 +332,18 @@ Primary-maintainer and code writer until version 0.03:
 
 =item *
 
-- Earl Hood, earl@earlhood.com, http://www.earlhood.com/
+Earl Hood, earl@earlhood.com, http://www.earlhood.com/
 
 =back
 
 
-Co-maintainer and code writer of version 0.04:
+Co-maintainer and code writer since version 0.04:
 
 =over 4
 
 =item *
 
-- Detlef Pilzecker, http://search.cpan.org/~deti/,
+Detlef Pilzecker, http://search.cpan.org/~deti/,
 http://www.secure-sip-server.net/
 
 =back

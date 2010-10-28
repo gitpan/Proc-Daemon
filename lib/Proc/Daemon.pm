@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.04';
+$Proc::Daemon::VERSION = '0.05';
 
 
 ################################################################################
@@ -66,7 +66,9 @@ sub new {
 #
 # %Daemon_Settings see &new.
 #
-# Returns to the parent: the PID of the daemon created.
+# Returns to the parent:
+#   - nothing (parent does exit) if the context is looking for no return value.
+#   - the PID(s) of the daemon(s) created.
 # Returns to the child : 0 | never returns if used with 'exec_command'.
 ################################################################################
 sub Init {
@@ -74,13 +76,12 @@ sub Init {
     my $settings_ref = shift;
 
 
-    # For backward compatibility:
     # Check if $self has been blessed into the package, otherwise do it now.
     if ( ref( $self ) ne 'Proc::Daemon' ) {
-       $self = ref( $self ) eq 'HASH' ? Proc::Daemon->new( %$self ) : Proc::Daemon->new();
+        $self = ref( $self ) eq 'HASH' ? Proc::Daemon->new( %$self ) : Proc::Daemon->new();
     }
-    # If $daemon->Init is used again in the same script, get
-    # the new arguments and check/adjust the settings again.
+    # If $daemon->Init is used again in the same script,
+    # update to the new arguments.
     elsif ( ref( $settings_ref ) eq 'HASH' ) {
         map { $self->{ $_ } = $$settings_ref{ $_ } } keys %$settings_ref;
     }
@@ -191,6 +192,9 @@ sub Init {
     my @pid = map { chomp $_; $_ eq '' ? undef : $_ } <MEMORY>;
     close MEMORY;
 
+
+    # Exit if the context is looking for no value (void context).
+    exit 0 unless defined wantarray;
     # Return the daemon PIDs (from second child/ren) to the first parent.
     return ( wantarray ? @pid : $pid[0] );
 }
@@ -478,7 +482,9 @@ sub get_pid_by_proc_table_attr {
         my $table = Proc::ProcessTable->new()->table;
 
         foreach ( @$table ) {
-            next if $_->$command ne $match;
+            # fix for Proc::ProcessTable: under some conditions $_->cmndline
+            # retruns with space and/or other characters at the end
+            next unless $_->$command =~ /^$match\s*$/;
             $pid = $_->pid;
             last;
         }

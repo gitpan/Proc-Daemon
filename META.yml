@@ -1,22 +1,14 @@
 --- #YAML:1.0
-name:               Proc-Daemon
-version:            0.05
-abstract:           ~
-author:
+name:                Proc-Daemon
+version:             0.06
+abstract:            ~
+license:             perl
+author:              
     - Earl Hood earl@earlhood.com, Detlef Pilzecker deti@cpan.org
-license:            perl
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
-build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    POSIX:  0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+generated_by:        ExtUtils::MakeMaker version 6.42
+distribution_type:   module
+requires:     
+    POSIX:                         0
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

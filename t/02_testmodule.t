@@ -33,7 +33,7 @@ my $daemon = Proc::Daemon->new(
 );
 
 # create a daemon
-my $Kid_PID = $daemon->Init;
+my $Kid_PID = $daemon->init; # init instead of Init is a test for the old style too!
 
 if ( ok( $Kid_PID, "child_1 was created with PID: " . ( defined $Kid_PID ? $Kid_PID : '<undef>' ) ) || defined $Kid_PID ) {
     # here goes the child

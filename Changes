@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Daemon.
 
+0.07  Thu Feb 17 2011
+	- Add signal processing to Kill_Daemon().
+	- Updated the documentation.
+
 0.06  Mon Jan 17 2011
 	- A lot of documentation was add to the source code.
 	- Daemon STDIN was fixed to "read" now instead of "write".

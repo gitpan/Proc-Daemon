@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.06';
+$Proc::Daemon::VERSION = '0.07';
 
 
 ################################################################################
@@ -114,7 +114,7 @@ sub Init {
 
 
             # Set the new working directory.
-            chdir $self->{work_dir} or die "Can't <chdir> to $self->{work_dir}: $!";
+            die "Can't <chdir> to $self->{work_dir}: $!" unless chdir $self->{work_dir};
 
             # Clear the file creation mask.
             umask 0;
@@ -194,8 +194,8 @@ sub Init {
                 if ( $exec_command ) {
                     exec $exec_command;
                     exit; # Not a real exit, but needed since Perl warns you if
-                    # there is no statement like 'die', 'warn', or 'exit'
-                    # following 'exec'. The 'exec' function executes a system
+                    # there is no statement like <die>, <warn>, or <exit>
+                    # following <exec>. The <exec> function executes a system
                     # command and never returns.
                 }
 
@@ -406,11 +406,12 @@ sub Status {
 
 ################################################################################
 # Kill the (daemon) process:
-# Kill_Daemon( [ number or string ] )
+# Kill_Daemon( [ number or string [, SIGNAL ] ] )
 #
 # Examples:
 #   $object->Kill_Daemon() - Tries to get the PID out of the settings in new() and kill it.
-#   $object->Kill_Daemon( 12345 ) - Number of PID to kill.
+#   $object->Kill_Daemon( 12345, 'TERM' ) - Number of PID to kill with signal 'TERM'. The
+#     names or numbers of the signals are the ones listed out by kill -l on your system.
 #   $object->Kill_Daemon( './pid.txt' ) - Path to file containing one PID to kill.
 #   $object->Kill_Daemon( 'perl /home/my_perl_daemon.pl' ) - Command line entry of the
 #               running program to kill. Requires Proc::ProcessTable to work.
@@ -420,7 +421,8 @@ sub Status {
 ################################################################################
 sub Kill_Daemon {
     my Proc::Daemon $self = shift;
-    my $pid = shift;
+    my $pid    = shift;
+    my $signal = shift || 'KILL';
     my $pidfile;
 
     # Get the process ID.
@@ -430,7 +432,7 @@ sub Kill_Daemon {
     return 0 if ! $pid;
 
     # Kill the process.
-    my $killed = kill( 9, $pid );
+    my $killed = kill( $signal, $pid );
 
     if ( $killed && $pidfile ) {
         # Set PID in pid file to '0'.

@@ -272,13 +272,15 @@ L<Proc::ProcessTable> to be installed.
 =back
 
 
-=item Kill_Daemon( [ $ARG ] )
+=item Kill_Daemon( [ $ARG [, SIGNAL] ] )
 
 This function kills the Daemon process. Returns the number of processes
 successfully killed (which mostly is not the same as the PID number), or 0 if
 the process wasn't found. 
 
-$ARG is the same as of C<Status()>.
+$ARG is the same as of C<Status()>. SIGNAL is an optional signal name or number
+as required by Perls C<kill> function and listed out by C<kill -l> on your
+system. Default value is 9 ('KILL' = non-catchable, non-ignorable kill).
 
 
 =item Fork

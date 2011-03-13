@@ -131,20 +131,23 @@ Defines the path to the daemon working directory. Defaults to C</>.
 
 =item child_STDIN
 
-Defines the path to STDIN of your daemon. Defaults to C</dev/null>. Mode is '<'
-(read).
+Defines the path to STDIN of your daemon. Defaults to C</dev/null>. Default
+Mode is '<' (read). You can set your prefered Mode as if you use Perls C<open>
+with a two-argument form.
 
 
 =item child_STDOUT
 
 Defines the path where the output of your daemon will go. Defaults to
-C</dev/null>. Mode is '+>' (write/read).
+C</dev/null>. Default Mode is '+>' (write/read). You can set your prefered Mode
+as if you use Perls C<open> with a two-argument form.
 
 
 =item child_STDERR
 
 Defines the path where the error output of your daemon will go. Defaults to
-C</dev/null>. Mode is '+>' (write/read).
+C</dev/null>. Default Mode is '+>' (write/read). You can set your prefered Mode
+as if you use Perls C<open> with a two-argument form.
 
 
 =item pid_file
@@ -167,7 +170,7 @@ Example:
     my $daemon = Proc::Daemon->new(
         work_dir     => '/working/daemon/directory',
         child_STDOUT => '/path/to/daemon/output.file',
-        child_STDERR => 'debug.txt',
+        child_STDERR => '+>>debug.txt',
         pid_file     => 'pid.txt',
         exec_command => 'perl /home/my_script.pl',
       # or:

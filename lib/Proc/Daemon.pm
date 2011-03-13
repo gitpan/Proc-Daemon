@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.07';
+$Proc::Daemon::VERSION = '0.08';
 
 
 ################################################################################
@@ -30,9 +30,9 @@ $Proc::Daemon::VERSION = '0.07';
 #
 #   %Daemon_Settings are hash key=>values and can be:
 #     work_dir     => '/working/daemon/directory'   -> defaults to '/'
-#     child_STDIN  => '/path/to/daemon/STDIN.file'  -> defautls to '/dev/null'
-#     child_STDOUT => '/path/to/daemon/STDOUT.file' -> defaults to '/dev/null'
-#     child_STDERR => '/path/to/daemon/STDERR.file' -> defaults to '/dev/null'
+#     child_STDIN  => '/path/to/daemon/STDIN.file'  -> defautls to '</dev/null'
+#     child_STDOUT => '/path/to/daemon/STDOUT.file' -> defaults to '+>/dev/null'
+#     child_STDERR => '/path/to/daemon/STDERR.file' -> defaults to '+>/dev/null'
 #     pid_file =>     '/path/to/pid/file.txt'       -> defaults to
 #       undef (= write no file)
 #     exec_command => 'perl /home/script.pl'        -> execute a system command
@@ -185,9 +185,9 @@ sub Init {
                 # Reopen STDIN, STDOUT and STDERR to '..._path' or to /dev/null.
                 # Data written on a null special file is discarded. Reads from
                 # the null special file always return end of file.
-                open( STDIN,  "<",  $self->{child_STDIN}  || "/dev/null" );
-                open( STDOUT, "+>", $self->{child_STDOUT} || "/dev/null" );
-                open( STDERR, "+>", $self->{child_STDERR} || "/dev/null" );
+                open( STDIN,  $self->{child_STDIN}  || "</dev/null" );
+                open( STDOUT, $self->{child_STDOUT} || "+>/dev/null" );
+                open( STDERR, $self->{child_STDERR} || "+>/dev/null" );
 
 
                 # Execute a system command and never return.
@@ -270,17 +270,17 @@ sub adjust_settings {
     # Set default 'work_dir' if needed.
     $self->{work_dir} ||= '/';
 
-    $self->fix_filename('child_STDIN')  if $self->{child_STDIN}  && $self->{child_STDIN}  ne '/dev/null';
+    $self->fix_filename( 'child_STDIN',  1 ) if $self->{child_STDIN};
 
-    $self->fix_filename('child_STDOUT') if $self->{child_STDOUT} && $self->{child_STDOUT} ne '/dev/null';
+    $self->fix_filename( 'child_STDOUT', 1 ) if $self->{child_STDOUT};
 
-    $self->fix_filename('child_STDERR') if $self->{child_STDERR} && $self->{child_STDERR} ne '/dev/null';
+    $self->fix_filename( 'child_STDERR', 1 ) if $self->{child_STDERR};
 
     # Check 'pid_file's name
     if ( $self->{pid_file} ) {
         die "Pidfile (pid_file => '$self->{pid_file}') can not be only a number. I must be able to distinguish it from a PID number in &get_pid('...')." if $self->{pid_file} =~ /^\d+$/;
 
-        $self->fix_filename('pid_file');
+        $self->fix_filename( 'pid_file' );
     }
 
     return;
@@ -291,8 +291,10 @@ sub adjust_settings {
 # - If the keys value is only a filename add the path of 'work_dir'.
 # - If we have already set a file for this key with the same "path/name",
 #   add a number to the file.
-# Args: ( $self, $key )
+# Args: ( $self, $key, $extract_mode )
 #   key: one of 'child_STDIN', 'child_STDOUT', 'child_STDERR', 'pid_file'
+#   extract_mode: 1 = separate MODE form filename before checking pathname
+#                 | <undef>
 # Returns: nothing
 ################################################################################
 my %memory;
@@ -300,6 +302,11 @@ sub fix_filename {
     my Proc::Daemon $self = shift;
     my $key = shift;
     my $var = $self->{ $key };
+    my $mode = '';
+    if ( shift ) {
+        $var =~ s/^([\+\<\>\-\|]+)//;
+        $mode = $1 || ( $key eq 'child_STDIN' ? '<' : '+>' );
+    }
 
     # add path to filename
     if ( $var =~ s/^\.\/// || $var !~ /\// ) {
@@ -322,7 +329,7 @@ sub fix_filename {
     }
 
     $memory{ $key }{ $var } = 1;
-    $self->{ $key } = $var;
+    $self->{ $key } = $mode . $var;
 
     return;
 }

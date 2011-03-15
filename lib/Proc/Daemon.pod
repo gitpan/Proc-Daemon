@@ -106,7 +106,7 @@ into a file if 'pid_file' is defined.
 NOTE: Because of the second fork the daemon will not be a session-leader and
 therefore Signals will not be send to other members of his process group. If
 you need the functionality of a session-leader you may want to call
-POSIX::setsid() manually on your daemon.
+POSIX::setsid() manually at your daemon.
 
 
 
@@ -132,22 +132,23 @@ Defines the path to the daemon working directory. Defaults to C</>.
 =item child_STDIN
 
 Defines the path to STDIN of your daemon. Defaults to C</dev/null>. Default
-Mode is '<' (read). You can set your prefered Mode as if you use Perls C<open>
-with a two-argument form.
+Mode is '<' (read). You can define other Mode the same way as you do using
+Perls C<open> in a two-argument form.
 
 
 =item child_STDOUT
 
 Defines the path where the output of your daemon will go. Defaults to
-C</dev/null>. Default Mode is '+>' (write/read). You can set your prefered Mode
-as if you use Perls C<open> with a two-argument form.
+C</dev/null>. Default Mode is '+>' (write/read). You can define other Mode the
+same way as you do using Perls C<open> in a two-argument form.
 
 
 =item child_STDERR
 
 Defines the path where the error output of your daemon will go. Defaults to
-C</dev/null>. Default Mode is '+>' (write/read). You can set your prefered Mode
-as if you use Perls C<open> with a two-argument form.
+C</dev/null>. Default Mode is '+>' (write/read). You can define other Mode the
+same way as you do using Perls C<open> in a two-argument form, see example
+below.
 
 
 =item pid_file
@@ -397,7 +398,7 @@ Prentice-Hall PTR, Copyright 1998.
 This module requires the C<POSIX> module to be installed.
 
 The C<Proc::ProcessTable> module is not essentially required but it can be
-usefull if it is installed (see above).
+useful if it is installed (see above).
 
 
 

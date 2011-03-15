@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Daemon.
 
+0.09  Tue Mar 15 2011
+	- Fix for a possibly not reseted numbered match variable ($1).
+	- Typo fix and text improvement in the documentation.
+
 0.08  Sun Mar 13 2011
 	- The <open> Mode of the daemon file handles STDIN, STDOUT, STDERR can be
 	  specified now. The default Mode values are the same as before.

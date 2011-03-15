@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.08';
+$Proc::Daemon::VERSION = '0.09';
 
 
 ################################################################################
@@ -293,20 +293,16 @@ sub adjust_settings {
 #   add a number to the file.
 # Args: ( $self, $key, $extract_mode )
 #   key: one of 'child_STDIN', 'child_STDOUT', 'child_STDERR', 'pid_file'
-#   extract_mode: 1 = separate MODE form filename before checking pathname
-#                 | <undef>
+#   extract_mode: true = separate <open> MODE form filename before checking
+#                 path/filename; false = no MODE to check
 # Returns: nothing
 ################################################################################
 my %memory;
 sub fix_filename {
     my Proc::Daemon $self = shift;
-    my $key = shift;
-    my $var = $self->{ $key };
-    my $mode = '';
-    if ( shift ) {
-        $var =~ s/^([\+\<\>\-\|]+)//;
-        $mode = $1 || ( $key eq 'child_STDIN' ? '<' : '+>' );
-    }
+    my $key  = shift;
+    my $var  = $self->{ $key };
+    my $mode = ( shift ) ? ( $var =~ s/^([\+\<\>\-\|]+)// ? $1 : ( $key eq 'child_STDIN' ? '<' : '+>' ) ) : '';
 
     # add path to filename
     if ( $var =~ s/^\.\/// || $var !~ /\// ) {

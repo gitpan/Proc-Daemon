@@ -5,7 +5,7 @@
 ##      Earl Hood         earl@earlhood.com
 ##      Detlef Pilzecker  deti@cpan.org
 ##  Description:
-##      see Daemon.pod file
+##      Run Perl program(s) as a daemon process, see docu in the Daemon.pod file
 ################################################################################
 ##  Copyright (C) 1997-2011 by Earl Hood and Detlef Pilzecker.
 ##
@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.09';
+$Proc::Daemon::VERSION = '0.10';
 
 
 ################################################################################
@@ -78,7 +78,7 @@ sub Init {
 
 
     # Check if $self has been blessed into the package, otherwise do it now.
-    if ( ref( $self ) ne 'Proc::Daemon' ) {
+    unless ( ref( $self ) && eval{ $self->isa( 'Proc::Daemon' ) } ) {
         $self = ref( $self ) eq 'HASH' ? Proc::Daemon->new( %$self ) : Proc::Daemon->new();
     }
     # If $daemon->Init is used again in the same script,

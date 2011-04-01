@@ -185,12 +185,14 @@ In this example:
 =item *
 
 the PID of the daemon will be returned to C<$daemon> in the parent process
-and a pid-file will be created at C</working/daemon/directory/pid.txt>
+and a pid-file will be created at C</working/daemon/directory/pid.txt>.
 
 =item *
 
-all STDOUT of the daemon will go to C</path/to/daemon/output.file> and
-all STDERR will go to C</working/daemon/directory/debug.txt>
+STDOUT will be open with Mode '+>' (write/read)
+to C</path/to/daemon/output.file> and STDERR will be open
+to C</working/daemon/directory/debug.txt> with Mode '+>>' (write/read opened for
+appending).
 
 =item *
 

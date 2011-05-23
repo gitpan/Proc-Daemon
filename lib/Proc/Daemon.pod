@@ -79,7 +79,8 @@ daemon completely from the first parent.
 
 =item 6
 
-The second child closes all open file descriptors.
+The second child closes all open file descriptors (unless you define
+C<dont_close_fh> and/or C<dont_close_fd>).
 
 
 =item 7
@@ -149,6 +150,29 @@ Defines the path where the error output of your daemon will go. Defaults to
 C</dev/null>. Default Mode is '+>' (write/read). You can define other Mode the
 same way as you do using Perls C<open> in a two-argument form, see example
 below.
+
+
+=item dont_close_fh
+
+If you define it, it must be an arrayref with file handles you want to preserve
+from the parent into the child (daemon). This may be the case if you have code
+below a C<__DATA__> token in your script or module called by C<use> or
+C<require>.
+
+    dont_close_fh => [ 'main::DATA', 'PackageName::DATA', ... ],
+
+You can add any kind of file handle to the array (expression in single quotes or
+a scalar variable), including 'STDIN', 'STDOUT' and 'STDERR'. Logically the path
+settings from above (C<child_STDIN>, ...) will be ignored in this case.
+
+DISCLAIMER: Using this argument may not detach your daemon fully from the
+parent! Use it at your own risk.
+
+
+=item dont_close_fd
+
+Same function and disclaimer as C<dont_close_fh>, but instead of file handles
+you write the numeric file descriptors inside the arrayref.
 
 
 =item pid_file

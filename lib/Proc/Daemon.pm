@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.11';
+$Proc::Daemon::VERSION = '0.12';
 
 my %memory;
 
@@ -214,14 +214,14 @@ sub Init {
 
                 # Close all file handles and descriptors the user does not want
                 # to preserve.
-                my $count;
+                my $hc_fd; # highest closed file descriptor
                 close $FH_MEMORY;
                 foreach ( 0 .. OpenMax() ) {
                     unless ( $dont_close_fd{ $_ } ) {
                         if    ( $_ == 0 ) { close STDIN  }
                         elsif ( $_ == 1 ) { close STDOUT }
                         elsif ( $_ == 2 ) { close STDERR }
-                        else { $count++ if POSIX::close( $_ ) }
+                        else { $hc_fd = $_ if POSIX::close( $_ ) }
                     }
                 }
 
@@ -240,9 +240,9 @@ sub Init {
                 # handles associated with one file, what can cause some
                 # confusion.   :-)
                 # see: http://rt.perl.org/rt3/Ticket/Display.html?id=72526
-                if ( $count ) {
+                if ( $hc_fd ) {
                     my @fh;
-                    foreach ( 1 .. $count ) { open $fh[ $_ ], "</dev/null" }
+                    foreach ( 3 .. $hc_fd ) { open $fh[ $_ ], "</dev/null" }
                     # Perl will try to close all handles when @fh leaves scope
                     # here, but the rude ones will sacrifice themselves to avoid
                     # potential damage later.
@@ -262,6 +262,7 @@ sub Init {
                 # Return the childs own PID (= 0)
                 return $pid;
             }
+
 
             # First child (= second parent) runs here.
 
@@ -302,6 +303,7 @@ sub Init {
 
 
     # Only first parent runs here.
+
 
     # Exit if the context is looking for no value (void context).
     exit 0 unless defined wantarray;

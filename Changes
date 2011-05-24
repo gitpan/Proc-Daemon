@@ -1,5 +1,10 @@
 Revision history for Perl module Proc::Daemon.
 
+0.12  Tue Mai 24 2011
+	- Init() did not close all filehandles reliably in some cases. Thanks again
+	  to Rob Brown for reporting.
+	- Text improvement in the documentation.
+
 0.11  Mon Mai 23 2011
 	- Init() didn't close all filehandles reliably (see also bug report at
 	  http://rt.perl.org/rt3/Ticket/Display.html?id=72526). Thanks to Rob Brown

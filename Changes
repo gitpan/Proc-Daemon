@@ -1,5 +1,11 @@
 Revision history for Perl module Proc::Daemon.
 
+0.13  Wed Jun 01 2011
+	- Add ability to define the user identifier for the daemon if you want to
+	  run it under other user then the parent (request from Holger Gläss).
+	- Add <eval> and <warn> for OS not supporting POSIX::setsid (e.g. Windows).
+	- Updated the documentation.
+
 0.12  Tue Mai 24 2011
 	- Init() did not close all filehandles reliably in some cases. Thanks again
 	  to Rob Brown for reporting.

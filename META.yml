@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Proc-Daemon
-version:             0.12
+version:             0.13
 abstract:            ~
 license:             perl
 author:              

@@ -67,7 +67,8 @@ The child clears the file creation mask.
 =item 4
 
 The child becomes a session leader, which detaches the program from the
-controlling terminal.
+controlling terminal. Windows OS mostly do not perform this action, Proc::Daemon
+will C<warn> you about this.
 
 
 =item 5
@@ -136,6 +137,17 @@ following keys from %ARGS are used:
 Defines the path to the working directory of your daemon. Defaults to C</>.
 
 
+=item setuid
+
+Sets the real user identifier (C<< $< >>) and the effective user identifier
+(C<< $> >>) for the daemon process using C<POSIX::setuid( ... )>, in case you
+want to run your daemon under an other user then the parent. Obviously the
+first user must have the rights to switch to the new user otherwise it will
+stay the same. It is helpful to define the argument C<setuid> if you start your
+script at boot time by init with the superuser, but wants the daemon to run
+under a normal user account.
+
+
 =item child_STDIN
 
 Defines the path to STDIN for your daemon. Defaults to C</dev/null>. Default
@@ -183,8 +195,8 @@ you write the numeric file descriptors inside the arrayref.
 
 =item pid_file
 
-Defines the path to a file where the PID of the daemon process will be
-stored. Defaults to C<undef> (= write no file).
+Defines the path to a file (owned by the parent user) where the PID of the
+daemon process will be stored. Defaults to C<undef> (= write no file).
 
 
 =item exec_command

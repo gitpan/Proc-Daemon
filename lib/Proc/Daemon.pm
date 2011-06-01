@@ -21,7 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.12';
+$Proc::Daemon::VERSION = '0.13';
 
 my %memory;
 
@@ -32,6 +32,7 @@ my %memory;
 #
 #   %Daemon_Settings are hash key=>values and can be:
 #     work_dir     => '/working/daemon/directory'   -> defaults to '/'
+#     setuid       => 12345                         -> defaults to <undef>
 #     child_STDIN  => '/path/to/daemon/STDIN.file'  -> defautls to '</dev/null'
 #     child_STDOUT => '/path/to/daemon/STDOUT.file' -> defaults to '+>/dev/null'
 #     child_STDERR => '/path/to/daemon/STDERR.file' -> defaults to '+>/dev/null'
@@ -153,9 +154,12 @@ sub Init {
             # Clear the file creation mask.
             umask 0;
 
-            # Detach the child from the terminal (no controlling tty), make it the
-            # session-leader and the process-group-leader of a new process group.
-            die "Cannot detach from controlling terminal" if POSIX::setsid() < 0;
+            # Detach the child from the terminal (no controlling tty), make it
+            # the session-leader and the process-group-leader of a new process
+            # group. Some (Windows) OS do not support POSIX::setsid(). This is
+            # the reason for the <eval> here. In this case we only <warn>.
+            die "Cannot detach from controlling terminal" if ( eval{ POSIX::setsid() } || 0 ) < 0;
+            warn "Cannot detach from controlling terminal with POSIX::setsid(): $@" if $@;
 
             # "Is ignoring SIGHUP necessary?
             #
@@ -224,6 +228,10 @@ sub Init {
                         else { $hc_fd = $_ if POSIX::close( $_ ) }
                     }
                 }
+
+                # Sets the real user identifier and the effective user
+                # identifier for the daemon process before opening files.
+                POSIX::setuid( $self->{setuid} ) if defined $self->{setuid};
 
                 # Reopen STDIN, STDOUT and STDERR to 'child_STD...'-path or to
                 # /dev/null. Data written on a null special file is discarded.

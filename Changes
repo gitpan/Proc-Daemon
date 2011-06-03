@@ -1,5 +1,12 @@
 Revision history for Perl module Proc::Daemon.
 
+0.14  Fri Jun 03 2011
+	- The filename memory is now a part of the object (not a package variable
+	  any more). This was a bug.
+	- Since <fork> is not performed on Windows OS as on Linux, I removed the
+	  <eval> and <warn> from 0.13 and add an INFO to the documentation.
+	- Updated the documentation.
+
 0.13  Wed Jun 01 2011
 	- Add ability to define the user identifier for the daemon if you want to
 	  run it under other user then the parent (request from Holger Gläss).

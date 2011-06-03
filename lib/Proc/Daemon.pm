@@ -21,9 +21,7 @@ package Proc::Daemon;
 use strict;
 use POSIX();
 
-$Proc::Daemon::VERSION = '0.13';
-
-my %memory;
+$Proc::Daemon::VERSION = '0.14';
 
 
 ################################################################################
@@ -53,6 +51,8 @@ sub new {
 
     my $self = \%args;
     bless( $self, $class );
+
+    $self->{memory} = {};
 
     return $self;
 }
@@ -154,12 +154,9 @@ sub Init {
             # Clear the file creation mask.
             umask 0;
 
-            # Detach the child from the terminal (no controlling tty), make it
-            # the session-leader and the process-group-leader of a new process
-            # group. Some (Windows) OS do not support POSIX::setsid(). This is
-            # the reason for the <eval> here. In this case we only <warn>.
-            die "Cannot detach from controlling terminal" if ( eval{ POSIX::setsid() } || 0 ) < 0;
-            warn "Cannot detach from controlling terminal with POSIX::setsid(): $@" if $@;
+            # Detach the child from the terminal (no controlling tty), make it the
+            # session-leader and the process-group-leader of a new process group.
+            die "Cannot detach from controlling terminal" if POSIX::setsid() < 0;
 
             # "Is ignoring SIGHUP necessary?
             #
@@ -324,8 +321,8 @@ sub Init {
         @pid = map { chomp $_; $_ eq '' ? undef : $_ } <$FH_MEMORY>;
         close $FH_MEMORY;
     }
-    else {
-        foreach ( keys %{ $memory{'pid_file'} } ) {
+    elsif ( $self->{memory}{pid_file} ) {
+        foreach ( keys %{ $self->{memory}{pid_file} } ) {
             open( $FH_MEMORY, "<", $_ ) || die "Can not open pid_file '<$_': $!";
             push( @pid, <$FH_MEMORY> );
             close $FH_MEMORY;
@@ -391,19 +388,19 @@ sub fix_filename {
 
     # If the file was already in use, modify it with '_number':
     # filename_X | filename_X.ext
-    if ( $memory{ $key }{ $var } ) {
+    if ( $self->{memory}{ $key }{ $var } ) {
         $var =~ s/([^\/]+)$//;
         my @i = split( /\./, $1 );
         my $j = $#i ? $#i - 1 : 0;
 
-        $memory{ "$key\_num" } ||= 0;
-        $i[ $j ] =~ s/_$memory{ "$key\_num" }$//;
-        $memory{ "$key\_num" }++;
-        $i[ $j ] .= '_' . $memory{ "$key\_num" };
+        $self->{memory}{ "$key\_num" } ||= 0;
+        $i[ $j ] =~ s/_$self->{memory}{ "$key\_num" }$//;
+        $self->{memory}{ "$key\_num" }++;
+        $i[ $j ] .= '_' . $self->{memory}{ "$key\_num" };
         $var .= join( '.', @i );
     }
 
-    $memory{ $key }{ $var } = 1;
+    $self->{memory}{ $key }{ $var } = 1;
     $self->{ $key } = $mode . $var;
 
     return;
